@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GRUPO AWS CYMETRIA API-HTTP</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:#11182b; --muted:#9aa4b2; --text:#e8eef8; --primary:#2f6df6; --accent:#10b981; --danger:#ef4444; --border:#1d2740;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Helvetica,Arial; background:var(--bg); color:var(--text);}    
+    .wrap{max-width:980px; margin:40px auto; padding:0 16px;}
+    header{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px}
+    h1{font-size:26px; margin:0}
+    .sub{color:var(--muted); font-size:14px}
+
+    /* Tabs */
+    .tabs{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:18px 0 14px}
+    .tab{border:1px solid var(--border); background:#0f172a; color:var(--text); padding:12px; border-radius:12px; cursor:pointer; text-align:center; font-weight:600}
+    .tab.active{background:var(--primary)}
+
+    /* Cards / sections */
+    .card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:14px}
+    .hidden{display:none}
+
+    /* Forms */
+    label{display:block; margin:10px 0 6px; color:var(--muted)}
+    input, textarea{width:100%; background:#0f172a; color:var(--text); border:1px solid var(--border); border-radius:10px; padding:10px}
+    textarea{min-height:90px; resize:vertical}
+
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{border:0; border-radius:10px; padding:10px 14px; cursor:pointer; font-weight:600}
+    .btn-primary{background:var(--primary); color:white}
+    .btn-ghost{background:#0f172a; color:var(--text); border:1px solid var(--border)}
+    .btn-good{background:var(--accent); color:#06251a}
+    .btn-bad{background:var(--danger); color:#330a0a}
+
+    /* List */
+    ul{list-style:none; padding:0; margin:0}
+    li.item{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 0; border-bottom:1px dashed var(--border)}
+    .muted{color:var(--muted)}
+
+    /* Toast */
+    .toast{position:fixed; right:16px; bottom:16px; background:#0f172a; border:1px solid var(--border); color:var(--text); padding:12px 14px; border-radius:12px; box-shadow:0 10px 20px rgba(0,0,0,.35); opacity:0; transform:translateY(10px); transition:.25s}
+    .toast.show{opacity:1; transform:translateY(0)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>GRUPO AWS CYMETRIA API-HTTP</h1>
+        <div class="sub">S3 (index.html) + API Gateway (HTTP) + Lambda + DynamoDB</div>
+      </div>
+      <button class="btn btn-ghost" id="btnRefreshTop" title="Refrescar listado">Refrescar</button>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="list">Listar</button>
+      <button class="tab" data-tab="create">Crear</button>
+      <button class="tab" data-tab="complete">Completar</button>
+      <button class="tab" data-tab="delete">Eliminar</button>
+    </div>
+
+    <!-- LISTAR -->
+    <section id="section-list" class="card">
+      <div class="row" style="justify-content:space-between; align-items:center">
+        <h3 style="margin:0">Tareas</h3>
+        <div class="muted" id="counter"></div>
+      </div>
+      <ul id="list"></ul>
+      <div class="row" style="margin-top:12px">
+        <button class="btn btn-ghost" id="btnRefresh">Refrescar</button>
+      </div>
+    </section>
+
+    <!-- CREAR -->
+    <section id="section-create" class="card hidden">
+      <h3 style="margin-top:0">Crear tarea</h3>
+      <form id="form-create">
+        <label for="title">Título</label>
+        <input id="title" placeholder="Ej: Leer documentación" required />
+
+        <label for="description">Descripción</label>
+        <textarea id="description" placeholder="Ej: Visitar docs.aws.amazon.com"></textarea>
+
+        <label for="task_id">(Opcional) ID manual</label>
+        <input id="task_id" placeholder="Ej: TAREA001" />
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-primary" type="submit">Crear</button>
+          <button class="btn btn-ghost" type="reset">Limpiar</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- COMPLETAR -->
+    <section id="section-complete" class="card hidden">
+      <h3 style="margin-top:0">Completar tarea</h3>
+      <form id="form-complete">
+        <label for="id_complete">ID de la tarea</label>
+        <input id="id_complete" placeholder="Ej: TAREA001" required />
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-good" type="submit">Marcar como completada</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ELIMINAR -->
+    <section id="section-delete" class="card hidden">
+      <h3 style="margin-top:0">Eliminar tarea</h3>
+      <form id="form-delete">
+        <label for="id_delete">ID de la tarea</label>
+        <input id="id_delete" placeholder="Ej: TAREA001" required />
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-bad" type="submit">Eliminar</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+const API_BASE_URL = 'REEMPLAZA_AQUI_TU_API_URL';
+
+// ---- UI helpers ----
+const toastEl = document.getElementById('toast');
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add('show');
+  setTimeout(()=> toastEl.classList.remove('show'), 2500);
+}
+function show(tab){
+  document.querySelectorAll('.tab').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  document.getElementById('section-list').classList.toggle('hidden', tab!=='list');
+  document.getElementById('section-create').classList.toggle('hidden', tab!=='create');
+  document.getElementById('section-complete').classList.toggle('hidden', tab!=='complete');
+  document.getElementById('section-delete').classList.toggle('hidden', tab!=='delete');
+}
+
+document.querySelectorAll('.tab').forEach(btn=> btn.addEventListener('click', ()=> show(btn.dataset.tab)));
+
+// ---- API calls ----
+async function loadTasks(){
+  const res = await fetch(`${API_BASE_URL}/tasks`);
+  if(!res.ok){ toast('Error al listar tareas'); return; }
+  const data = await res.json();
+  const ul = document.getElementById('list');
+  ul.innerHTML = '';
+  const tasks = data.tasks || [];
+  document.getElementById('counter').textContent = `${tasks.length} tareas`;
+  tasks.forEach(t => {
+    const li = document.createElement('li'); li.className = 'item';
+    li.innerHTML = `
+      <div>
+        <strong>${t.title}</strong> <span class="muted">— ${t.description || ''}</span><br/>
+        <span class="muted">ID: ${t.task_id} • Estado: ${t.completed ? '✅ Completada' : '⏳ Pendiente'}</span>
+      </div>
+      <div class="row">
+        <button class="btn btn-good" title="Completar" onclick="quickComplete('${t.task_id}')">Completar</button>
+        <button class="btn btn-bad" title="Eliminar" onclick="quickDelete('${t.task_id}')">Eliminar</button>
+      </div>`;
+    ul.appendChild(li);
+  });
+}
+
+async function createTask(evt){
+  evt.preventDefault();
+  const body = {
+    title: document.getElementById('title').value,
+    description: document.getElementById('description').value,
+  };
+  const manualId = document.getElementById('task_id').value.trim();
+  if (manualId) body.task_id = manualId;
+
+  const res = await fetch(`${API_BASE_URL}/tasks`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+  });
+  if (res.ok){
+    const out = await res.json();
+    (document.getElementById('form-create')).reset();
+    toast(`Tarea creada (ID: ${out.task_id || 'auto'})`);
+    show('list'); loadTasks();
+  } else {
+    toast('Error al crear la tarea');
+  }
+}
+
+async function completeTask(evt){
+  evt.preventDefault();
+  const id = document.getElementById('id_complete').value.trim();
+  if(!id){ toast('ID requerido'); return; }
+  const res = await fetch(`${API_BASE_URL}/tasks/${encodeURIComponent(id)}/complete`, { method: 'POST' });
+  if(res.ok){ toast('Tarea completada'); show('list'); loadTasks(); }
+  else { toast('Error al completar'); }
+}
+
+async function deleteTask(evt){
+  evt.preventDefault();
+  const id = document.getElementById('id_delete').value.trim();
+  if(!id){ toast('ID requerido'); return; }
+  const res = await fetch(`${API_BASE_URL}/tasks/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  if(res.ok){ toast('Tarea eliminada'); show('list'); loadTasks(); }
+  else { toast('Error al eliminar'); }
+}
+
+// Acciones rápidas desde el listado
+async function quickComplete(id){
+  const res = await fetch(`${API_BASE_URL}/tasks/${encodeURIComponent(id)}/complete`, { method: 'POST' });
+  if(res.ok){ toast('Completada'); loadTasks(); } else { toast('Error'); }
+}
+async function quickDelete(id){
+  const res = await fetch(`${API_BASE_URL}/tasks/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  if(res.ok){ toast('Eliminada'); loadTasks(); } else { toast('Error'); }
+}
+
+// Listeners
+ document.getElementById('form-create').addEventListener('submit', createTask);
+ document.getElementById('form-complete').addEventListener('submit', completeTask);
+ document.getElementById('form-delete').addEventListener('submit', deleteTask);
+ document.getElementById('btnRefresh').addEventListener('click', loadTasks);
+ document.getElementById('btnRefreshTop').addEventListener('click', loadTasks);
+
+// Init
+show('list'); loadTasks();
+</script>
+</body>
+</html>
