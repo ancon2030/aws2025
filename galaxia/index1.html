@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal — Saga Clásica (1977–1983)</title>
+<meta name="description" content="Portal web de una space‑opera clásica de los años 70s/80s. Starfield, hipersalto, crawl y mini posters SVG. Todo en un solo archivo (HTML+CSS+JS).">
+<style>
+  :root{
+    --bg:#03030a;
+    --ink:#e6f1ff;
+    --accent:#00e5ff;
+    --accent2:#ff7d00;
+    --danger:#ff3055;
+    --ok:#36ff7f;
+    --gold:#ffd54a;
+    --panel:#0b0f1a;
+    --glow:0 0 20px rgba(0,229,255,.6);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;background:var(--bg);color:var(--ink);margin:0;font-family:system-ui,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;overflow-x:hidden}
+  a{color:var(--accent)}
+  /* Starfield canvas sits behind everything */
+  #starfield{position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse at 50% -20%,#0b1630,transparent 55%),radial-gradient(ellipse at 120% 10%,#151a2a,transparent 40%),radial-gradient(ellipse at -20% 80%,#121b2c,transparent 45%),#000}
+  /* Subtle nebula */
+  .nebula{position:fixed;inset:-20vh -20vw;z-index:-1;pointer-events:none;filter:blur(40px) saturate(130%);opacity:.45;background:
+    radial-gradient(60vmax 40vmax at 10% 15%, rgba(0, 229,255,.18), transparent 60%),
+    radial-gradient(50vmax 35vmax at 85% 20%, rgba(255, 125,0,.12), transparent 60%),
+    radial-gradient(40vmax 30vmax at 80% 85%, rgba(255, 48,85,.10), transparent 60%)
+  }
+  /* HUD header */
+  header.hud{
+    position:sticky;top:0;z-index:20;
+    background:linear-gradient(#06101f99,#06101f33 60%,transparent);
+    backdrop-filter:blur(4px);
+    border-bottom:1px solid #0d223a;
+    padding:.75rem 1rem;
+  }
+  header .wrap{display:flex;gap:1rem;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto}
+  h1{margin:0;font-weight:800;letter-spacing:1px;font-size:clamp(1.1rem,1.8vw,1.6rem)}
+  h1 .year{color:var(--gold);text-shadow:0 0 8px rgba(255,213,74,.5)}
+  nav{display:flex;gap:.75rem;flex-wrap:wrap}
+  nav a{padding:.4rem .7rem;border:1px solid #1f375a;border-radius:.6rem;text-decoration:none;background:#0a1424}
+  .ctas{display:flex;gap:.5rem;align-items:center}
+  button, .btn{cursor:pointer;border:1px solid #21486b;background:#0a1c2c;color:var(--ink);padding:.55rem .8rem;border-radius:.6rem}
+  #hyperdrive{border-color:#0e6a90;box-shadow:inset 0 0 12px #0e6a9040, 0 0 18px #0e6a9022}
+  #crtToggle{border-color:#3f3f3f}
+  #saberColor{accent-color:var(--danger)}
+  .badge{padding:.25rem .5rem;border-radius:.5rem;background:#13243a;border:1px solid #204160;color:#9ed1ff;font-size:.78rem}
+  main{max-width:1200px;margin:0 auto;padding:1.2rem}
+  /* Hero */
+  .hero{
+    position:relative;min-height:54vh;margin:1rem 0 2rem;border:1px solid #11223a;
+    background:linear-gradient(180deg,#071021c0,#060a14a0 70%,#05070d),
+               radial-gradient(60% 100% at 50% 0%, #0e1a32, transparent 60%);
+    overflow:hidden;border-radius:1rem;box-shadow:0 20px 120px #000 inset, 0 0 40px #000;
+  }
+  .hero .title{
+    position:absolute;left:5%;top:10%;max-width:700px;
+    font-weight:900;line-height:1.05;
+    font-size:clamp(1.8rem,6vw,4rem);
+    letter-spacing:1.5px;
+    text-shadow:
+      0 0 5px #fff2,
+      0 0 22px #00e5ff22,
+      0 0 50px #00e5ff55;
+  }
+  .hero .subtitle{font-weight:600;color:#bfe8ff;margin-top:.35rem;font-size:clamp(.9rem,2.2vw,1.2rem)}
+  .orbiters{position:absolute;inset:0;pointer-events:none}
+  /* Cheap X‑wing & TIE SVG sizing */
+  .ship{position:absolute;opacity:.9;filter:drop-shadow(0 0 6px #fff8)}
+  .ship.xwing{width:120px;animation: drift1 26s linear infinite}
+  .ship.tie{width:100px;animation: drift2 22s linear infinite reverse}
+  .ship.falcon{width:140px;animation: drift3 30s linear infinite}
+  @keyframes drift1{0%{transform:translate(-10%,30%) rotate(18deg)}100%{transform:translate(110%,-20%) rotate(22deg)}}
+  @keyframes drift2{0%{transform:translate(110%,50%) rotate(-12deg)}100%{transform:translate(-20%,-10%) rotate(-8deg)}}
+  @keyframes drift3{0%{transform:translate(50%,110%) rotate(0deg)}100%{transform:translate(40%,-20%) rotate(3deg)}}
+  /* Sections */
+  section{margin:2rem 0;padding:1.1rem;border:1px solid #132642;border-radius:1rem;background:linear-gradient(180deg,#091224,#0a1428)}
+  section h2{margin-top:.2rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+  .card{background:#0b1324;border:1px solid #163255;border-radius:1rem;padding:1rem;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;inset:-2px;border-radius:1.2rem;padding:1px;background:linear-gradient(135deg,#00e5ff22,#ffd54a22,#ff7d0020,#ff305522);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+  .poster{aspect-ratio:16/9;border-radius:.8rem;border:1px solid #1b3456;background:#081024;display:grid;place-items:center;overflow:hidden}
+  .poster svg{width:100%;height:100%}
+  .meta{display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin-top:.7rem}
+  .tag{font-size:.78rem;padding:.2rem .5rem;background:#101d31;border:1px solid #1f3457;border-radius:.5rem;color:#c7e6ff}
+  /* Crawl */
+  .crawl-wrap{height:60vh;perspective:600px;overflow:hidden;border:1px dashed #1e365c;border-radius:1rem;background:radial-gradient(ellipse at 50% 120%,#051022,transparent 50%)}
+  .crawl{
+    position:relative;color:#ffd54a;font-weight:700;letter-spacing:.5px;
+    text-align:justify;line-height:1.75;transform-origin:50% 100%;padding:0 1.5rem;
+    animation:crawl 55s linear infinite;
+  }
+  .crawl h3{text-align:center;margin:1.2rem 0 .5rem 0;font-size:1.2rem}
+  @keyframes crawl{
+    0%{transform: rotateX(22deg) translateY(75%);}
+    100%{transform: rotateX(22deg) translateY(-220%);}
+  }
+  /* Saber cursor */
+  .saber{
+    position:fixed;left:0;top:0;pointer-events:none;z-index:15;mix-blend-mode:screen;
+    transform:translate(-50%,-50%);will-change:transform,opacity;
+  }
+  .saber .blade{
+    width:14px;height:160px;border-radius:10px;box-shadow:0 0 12px currentColor,0 0 40px currentColor,0 0 80px currentColor;
+    transform-origin:50% 100%;transform:rotate(25deg);
+    filter:brightness(1.3);
+  }
+  .saber .hilt{width:20px;height:26px;background:linear-gradient(180deg,#444,#222);border:1px solid #555;border-radius:3px;margin:-4px auto 0 auto}
+  /* Hyperspace overlay */
+  .hyper{position:fixed;inset:0;pointer-events:none;z-index:10;opacity:0;transition:opacity .2s}
+  .hyper.active{opacity:1;animation: hyperlines .9s linear infinite}
+  @keyframes hyperlines{
+    0%{background:repeating-linear-gradient(90deg,#fff1 0 1px,transparent 1px 2px)}
+    50%{background:repeating-linear-gradient(90deg,#fff3 0 1px,transparent 1px 3px)}
+    100%{background:repeating-linear-gradient(90deg,#fff2 0 1px,transparent 1px 2px)}
+  }
+  /* Retro CRT */
+  .crt{filter:contrast(1.05) saturate(1.08)}
+  .crt::after{
+    content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(transparent 50%,rgba(0,0,0,.15) 51%);background-size:100% 3px;mix-blend-mode:multiply;opacity:.6
+  }
+  footer{opacity:.8;margin:2.5rem auto 1.5rem auto;text-align:center}
+  /* Responsive helpers */
+  @media (max-width:700px){
+    .hero .title{left:6%;top:12%}
+    .saber .blade{height:120px}
+  }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="nebula"></div>
+<header class="hud">
+  <div class="wrap">
+    <h1>Portal — <span class="year">Saga Clásica 1977–1983</span></h1>
+    <nav>
+      <a href="#episodios">Episodios</a>
+      <a href="#crawlzone">Crawl</a>
+      <a href="#galeria">Galería</a>
+      <a href="#creditos">Créditos</a>
+    </nav>
+    <div class="ctas">
+      <span class="badge">HTML+CSS+JS en uno</span>
+      <button id="hyperdrive" title="Activar hipersalto">Hiperimpulso</button>
+      <button id="crtToggle" title="Modo retro CRT">Modo CRT</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" aria-label="Portada">
+    <div class="title">
+      Saga Clásica<br>
+      <span class="subtitle">Una aventura espacial de los setenta y ochenta</span>
+    </div>
+    <div class="orbiters">
+      <!-- Inline SVGs: X‑wing, TIE, “Falcon‑like” (genéricos, no oficiales) -->
+      <svg class="ship xwing" viewBox="0 0 220 120" aria-hidden="true">
+        <defs>
+          <linearGradient id="neonA" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#7ae1ff"/>
+            <stop offset="1" stop-color="#00e5ff"/>
+          </linearGradient>
+        </defs>
+        <g fill="url(#neonA)" stroke="#9ef" stroke-width="2">
+          <polygon points="110,10 140,60 110,52 80,60" />
+          <rect x="96" y="52" width="28" height="30" rx="6" />
+          <polygon points="110,82 160,110 110,98 60,110" />
+          <rect x="40" y="58" width="40" height="6" rx="3"/>
+          <rect x="140" y="58" width="40" height="6" rx="3"/>
+        </g>
+      </svg>
+
+      <svg class="ship tie" viewBox="0 0 200 150" aria-hidden="true">
+        <g fill="#cfe3ff" stroke="#cfe3ff" stroke-width="3">
+          <rect x="10" y="30" width="40" height="90" rx="6"/>
+          <rect x="150" y="30" width="40" height="90" rx="6"/>
+          <circle cx="100" cy="75" r="22" fill="none"/>
+          <line x1="52" y1="75" x2="78" y2="75"/>
+          <line x1="122" y1="75" x2="148" y2="75"/>
+        </g>
+      </svg>
+
+      <svg class="ship falcon" viewBox="0 0 180 180" aria-hidden="true">
+        <g fill="#ffe3a8" stroke="#ffe3a8" opacity=".9">
+          <circle cx="90" cy="90" r="58" fill="none"/>
+          <path d="M90 25 L110 90 L90 155 L70 90 Z" />
+          <circle cx="90" cy="90" r="10"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section id="episodios">
+    <h2>Trilogía — 70s/80s</h2>
+    <p style="opacity:.85">Un homenaje visual de estilo retro a una saga que definió la ciencia ficción en el cine. Efectos, animaciones y gráficos SVG propios para evocar esa estética sin usar recursos externos.</p>
+    <div class="grid">
+      <article class="card">
+        <div class="poster" title="1977">
+          <!-- Poster 77: twin suns -->
+          <svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice">
+            <rect width="160" height="90" fill="#081020"/>
+            <radialGradient id="sun1" cx="20%" cy="35%">
+              <stop offset="0" stop-color="#ffd54a"/>
+              <stop offset="1" stop-color="#ffd54a00"/>
+            </radialGradient>
+            <radialGradient id="sun2" cx="35%" cy="45%">
+              <stop offset="0" stop-color="#ff9f40"/>
+              <stop offset="1" stop-color="#ff9f4000"/>
+            </radialGradient>
+            <circle cx="40" cy="25" r="18" fill="url(#sun1)"/>
+            <circle cx="65" cy="32" r="10" fill="url(#sun2)"/>
+            <rect x="0" y="65" width="160" height="25" fill="#0e172a"/>
+            <polygon points="0,68 30,70 60,75 90,72 120,78 160,70 160,90 0,90" fill="#0a1224"/>
+            <!-- tiny droids -->
+            <circle cx="24" cy="64" r="2" fill="#b7caf3"/>
+            <circle cx="28" cy="64" r="1.5" fill="#e5f0ff"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <strong>1977 — Comienzo</strong>
+          <span class="tag">Aventura</span>
+        </div>
+        <p>Desierto, atardeceres dobles y una chispa de esperanza. Diseño cromático cálido con sombras frías para un contraste retro.</p>
+      </article>
+
+      <article class="card">
+        <div class="poster" title="1980">
+          <!-- Poster 80: walkers & hielo -->
+          <svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="ice" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#0b1b33"/>
+                <stop offset="1" stop-color="#05203a"/>
+              </linearGradient>
+            </defs>
+            <rect width="160" height="90" fill="url(#ice)"/>
+            <rect x="0" y="60" width="160" height="30" fill="#0a1e36"/>
+            <!-- walkers minimalistas -->
+            <rect x="20" y="48" width="22" height="12" fill="#cfe3ff"/>
+            <line x1="24" y1="60" x2="24" y2="74" stroke="#cfe3ff" />
+            <line x1="38" y1="60" x2="38" y2="74" stroke="#cfe3ff" />
+            <rect x="80" y="45" width="26" height="14" fill="#cfe3ff"/>
+            <line x1="84" y1="59" x2="84" y2="76" stroke="#cfe3ff" />
+            <line x1="100" y1="59" x2="100" y2="76" stroke="#cfe3ff" />
+            <!-- grapas de tow -->
+            <polyline points="40,54 58,57 75,60" fill="none" stroke="#9ed1ff" stroke-dasharray="3 3"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <strong>1980 — Resistencia</strong>
+          <span class="tag">Batalla ártica</span>
+        </div>
+        <p>Clima gélido, máquinas colosales y un tinte dramático. Líneas frías y un horizonte bajo para reforzar la escala.</p>
+      </article>
+
+      <article class="card">
+        <div class="poster" title="1983">
+          <!-- Poster 83: bosque y escudos -->
+          <svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#082a1a"/>
+                <stop offset="1" stop-color="#05170e"/>
+              </linearGradient>
+            </defs>
+            <rect width="160" height="90" fill="url(#wood)"/>
+            <rect x="0" y="58" width="160" height="32" fill="#09361f"/>
+            <!-- generador de escudo -->
+            <circle cx="130" cy="35" r="16" fill="none" stroke="#00e5ff" stroke-width="2"/>
+            <circle cx="130" cy="35" r="10" fill="none" stroke="#00e5ff88" stroke-width="1"/>
+            <line x1="130" y1="51" x2="130" y2="75" stroke="#00e5ff55"/>
+            <!-- speeder -->
+            <rect x="30" y="48" width="24" height="6" rx="3" fill="#cfe3ff"/>
+            <rect x="54" y="49" width="6" height="4" rx="2" fill="#cfe3ff"/>
+            <line x1="30" y1="51" x2="18" y2="51" stroke="#cfe3ff"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <strong>1983 — Bosques y alianza</strong>
+          <span class="tag">Final clásico</span>
+        </div>
+        <p>Velocidad entre árboles, tecnología y naturaleza. Un retrato de cierre luminoso con destellos “shield”.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="crawlzone">
+    <h2>Apertura (Crawl)</h2>
+    <div class="crawl-wrap">
+      <div class="crawl">
+        <h3>Capítulo Clásico</h3>
+        <p>Hace mucho tiempo, en una galaxia muy, muy lejana…</p>
+        <p>La chispa de la aventura prende motores hiperespaciales. Héroes improbables, naves veloces y mundos con dos soles trazan el mapa de un viaje inolvidable.</p>
+        <p>En tiempos de incertidumbre, la valentía surge donde menos se espera. Entre hielo, desiertos y bosques, la alianza por la libertad se fortalece.</p>
+        <p>Mientras viejas sombras resurgen, la esperanza aprende a brillar con luz propia. Que la imaginación acompase cada salto al infinito.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="galeria">
+    <h2>Galería interactiva</h2>
+    <p style="opacity:.85">Pasa el cursor por encima para activar “sables” y pulsa el botón de hipersalto para ver líneas de velocidad. Todos los gráficos son SVG/Canvas generados aquí.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="poster">
+          <!-- duelo de sables minimalista -->
+          <svg viewBox="0 0 160 90">
+            <rect width="160" height="90" fill="#070d1a"/>
+            <g>
+              <rect x="30" y="20" width="8" height="50" fill="#ff3055" filter="url(#g1)"/>
+              <rect x="122" y="20" width="8" height="50" fill="#36ff7f" filter="url(#g1)"/>
+              <line x1="38" y1="70" x2="80" y2="85" stroke="#666" stroke-width="4"/>
+              <line x1="122" y1="70" x2="80" y2="85" stroke="#666" stroke-width="4"/>
+            </g>
+            <defs>
+              <filter id="g1">
+                <feGaussianBlur stdDeviation="2"/>
+                <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#fff"/>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+        <div class="meta"><strong>Duelo</strong><span class="tag">Neón</span></div>
+        <p>Trazo brillante y contraste alto para ese duelo que todos imaginamos.</p>
+      </div>
+
+      <div class="card">
+        <div class="poster">
+          <!-- salto a la luz -->
+          <svg viewBox="0 0 160 90">
+            <defs>
+              <radialGradient id="warp" cx="50%" cy="50%">
+                <stop offset="0" stop-color="#fff"/>
+                <stop offset="1" stop-color="#ffffff00"/>
+              </radialGradient>
+            </defs>
+            <rect width="160" height="90" fill="#03060c"/>
+            <circle cx="80" cy="45" r="10" fill="url(#warp)"/>
+            <g stroke="#9ed1ff" stroke-width="1">
+              <line x1="10" y1="45" x2="70" y2="45"/>
+              <line x1="90" y1="45" x2="150" y2="45"/>
+            </g>
+          </svg>
+        </div>
+        <div class="meta"><strong>Hipersalto</strong><span class="tag">Velocidad</span></div>
+        <p>Eje central luminoso y líneas direccionales: sensación de aceleración.</p>
+      </div>
+
+      <div class="card">
+        <div class="poster">
+          <!-- hangar retro -->
+          <svg viewBox="0 0 160 90">
+            <rect width="160" height="90" fill="#050b16"/>
+            <rect x="15" y="18" width="130" height="54" fill="#0b1426" stroke="#1a2e56"/>
+            <circle cx="80" cy="45" r="16" fill="#101e36" stroke="#24406e"/>
+            <rect x="75" y="38" width="10" height="20" fill="#9ed1ff"/>
+            <line x1="15" y1="18" x2="145" y2="72" stroke="#142749"/>
+            <line x1="145" y1="18" x2="15" y2="72" stroke="#142749"/>
+          </svg>
+        </div>
+        <div class="meta"><strong>Hangar</strong><span class="tag">Tecnología</span></div>
+        <p>Geometría simple, luces frías y líneas de fuga marcadas.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      <label for="saberColor">Color del sable:</label>
+      <select id="saberColor">
+        <option value="#36ff7f">Verde</option>
+        <option value="#00e5ff">Azul</option>
+        <option value="#ff3055">Rojo</option>
+        <option value="#ffd54a">Dorado</option>
+      </select>
+      <span class="badge">Mueve el mouse y haz clic para “encender”.</span>
+    </div>
+  </section>
+
+  <section id="creditos">
+    <h2>Créditos & notas</h2>
+    <ul>
+      <li>Diseño, SVGs, animaciones y efectos hechos a mano (sin imágenes externas).</li>
+      <li>Este archivo es autónomo: sube <strong>index.html</strong> y listo.</li>
+      <li>Inspirado en el espíritu de las películas clásicas de finales de los 70s y principios de los 80s.</li>
+    </ul>
+  </section>
+
+  <footer>© 2025 — Portal temático para uso educativo y demostrativo.</footer>
+</main>
+
+<!-- Saber cursor -->
+<div class="saber" id="saber" aria-hidden="true">
+  <div class="blade" id="blade" style="color:#36ff7f"></div>
+  <div class="hilt"></div>
+</div>
+<div class="hyper" id="hyper"></div>
+
+<script>
+// ============ STARFIELD CANVAS ============
+(function(){
+  const c = document.getElementById('starfield');
+  const ctx = c.getContext('2d');
+  let w,h,stars=[],baseSpeed=.15, speed=baseSpeed, hyper=false;
+
+  function resize(){
+    w = c.width = window.innerWidth;
+    h = c.height = window.innerHeight;
+    stars = Array.from({length: Math.min(600, Math.floor(w*h/2500))}, () => ({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      z: Math.random()*1 + .2,
+      r: Math.random()*1.2 + .2
+    }));
+  }
+  window.addEventListener('resize', resize); resize();
+
+  function tick(){
+    ctx.clearRect(0,0,w,h);
+    for(const s of stars){
+      s.x += (s.x - w/2) * speed * 0.002 * s.z;
+      s.y += (s.y - h/2) * speed * 0.002 * s.z;
+      s.r += speed*0.002*s.z;
+      if(s.x< -50 || s.x> w+50 || s.y< -50 || s.y> h+50){
+        s.x=Math.random()*w; s.y=Math.random()*h; s.r=Math.random()*1 + .2; s.z=Math.random()*1 + .2;
+      }
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(235,245,255,'+(0.6 + s.z*0.4)+')';
+      ctx.arc(s.x,s.y,Math.min(2.4,s.r),0,Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  // Hyperdrive controls
+  const hyperLayer = document.getElementById('hyper');
+  function hyperdrive(){
+    if(hyper) return;
+    hyper = true;
+    hyperLayer.classList.add('active');
+    let t = 0;
+    const iv = setInterval(()=>{
+      speed = Math.min(5, baseSpeed + t*0.12);
+      t++;
+      if(t>20){
+        clearInterval(iv);
+        setTimeout(()=>{
+          speed = baseSpeed;
+          hyper=false;
+          hyperLayer.classList.remove('active');
+        }, 1200);
+      }
+    }, 40);
+  }
+  document.getElementById('hyperdrive').addEventListener('click', hyperdrive);
+})();
+
+// ============ SABER CURSOR ============
+(function(){
+  const s = document.getElementById('saber');
+  const blade = document.getElementById('blade');
+  let on = false, mx=0, my=0;
+
+  document.addEventListener('mousemove', e=>{
+    mx = e.clientX; my = e.clientY;
+    s.style.transform = `translate(${mx}px, ${my}px)`;
+  });
+  document.addEventListener('mousedown', ()=>{
+    on = !on;
+    s.style.opacity = on ? '1' : '.15';
+  });
+  s.style.opacity = '.15';
+
+  document.getElementById('saberColor').addEventListener('change', e=>{
+    blade.style.color = e.target.value;
+  });
+})();
+
+// ============ CRT TOGGLE ============
+(function(){
+  const root = document.documentElement;
+  const btn = document.getElementById('crtToggle');
+  let on = false;
+  btn.addEventListener('click', ()=>{
+    on = !on;
+    if(on) document.body.classList.add('crt'); else document.body.classList.remove('crt');
+  });
+})();
+
+// ============ SCROLL REVEALS ============
+(function(){
+  const reveal = (el)=>{
+    el.style.transform='translateY(8px)';
+    el.style.opacity='0';
+    el.style.transition='transform .6s ease, opacity .6s ease';
+    const io = new IntersectionObserver((r)=>{
+      r.forEach(e=>{
+        if(e.isIntersecting){
+          el.style.transform='translateY(0)';
+          el.style.opacity='1'; io.unobserve(el);
+        }
+      });
+    }, {threshold:.15});
+    io.observe(el);
+  };
+  document.querySelectorAll('section, .card').forEach(reveal);
+})();
+</script>
+</body>
+</html>

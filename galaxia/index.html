@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de la Guerra de las Galaxias - Trilogía Original</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #FFE81F;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        /* Cursor personalizado de sable de luz */
+        .lightsaber-cursor {
+            position: fixed;
+            width: 4px;
+            height: 40px;
+            background: linear-gradient(to bottom, #00ff00, #ffffff);
+            border-radius: 2px;
+            box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+            pointer-events: none;
+            z-index: 10000;
+            transition: all 0.1s ease;
+        }
+        
+        /* Fondo de estrellas animadas */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* Efecto de velocidad warp */
+        .warp-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .warp-line {
+            position: absolute;
+            width: 2px;
+            height: 100vh;
+            background: linear-gradient(to bottom, transparent, #ffffff, transparent);
+            animation: warp 0.5s linear infinite;
+        }
+        
+        @keyframes warp {
+            0% { transform: translateX(-100vw) scaleY(0); }
+            50% { transform: translateX(50vw) scaleY(1); }
+            100% { transform: translateX(200vw) scaleY(0); }
+        }
+        
+        /* Header con logo animado */
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            text-shadow: 0 0 20px #FFE81F, 0 0 40px #FFE81F;
+            animation: glow 2s ease-in-out infinite alternate;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #FFE81F, 0 0 40px #FFE81F; }
+            to { text-shadow: 0 0 30px #FFE81F, 0 0 60px #FFE81F, 0 0 80px #FFE81F; }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #C0C0C0;
+            animation: fadeInUp 2s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Contenedor principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Sección de películas */
+        .movies-section {
+            margin: 4rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #FFE81F;
+            text-shadow: 0 0 10px #FFE81F;
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .movie-card {
+            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .movie-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #FFE81F, #00ff00, #ff0000, #FFE81F);
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .movie-card:hover::before {
+            opacity: 1;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(255, 232, 31, 0.3);
+        }
+        
+        .movie-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .movie-card:hover .movie-image {
+            filter: brightness(1.2) contrast(1.1);
+        }
+        
+        .movie-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #FFE81F;
+        }
+        
+        .movie-year {
+            color: #C0C0C0;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .movie-description {
+            color: #E0E0E0;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        
+        /* Botones interactivos */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 4rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #FFE81F, #FFA500);
+            color: #000;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(255, 232, 31, 0.5);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #00ff00, #32cd32);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff0000, #ff4500);
+            color: white;
+        }
+        
+        /* Sección de personajes */
+        .characters-section {
+            margin: 4rem 0;
+            text-align: center;
+        }
+        
+        .characters-carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 2rem;
+            padding: 2rem 0;
+            scroll-behavior: smooth;
+        }
+        
+        .character-card {
+            min-width: 200px;
+            background: radial-gradient(circle, #2d2d2d, #1a1a1a);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid #FFE81F;
+        }
+        
+        .character-card:hover {
+            transform: rotateY(10deg) scale(1.1);
+            box-shadow: 0 15px 35px rgba(255, 232, 31, 0.4);
+        }
+        
+        .character-name {
+            font-size: 1.2rem;
+            color: #FFE81F;
+            margin-bottom: 0.5rem;
+        }
+        
+        .character-role {
+            color: #C0C0C0;
+            font-size: 0.9rem;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(to bottom, transparent, #1a1a1a);
+            margin-top: 4rem;
+        }
+        
+        .footer-text {
+            color: #C0C0C0;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Efectos de sonido visuales */
+        .sound-wave {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border: 2px solid #00ff00;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            z-index: 1000;
+        }
+        
+        .sound-wave.active {
+            animation: soundWave 1s ease-out;
+        }
+        
+        @keyframes soundWave {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo { font-size: 2.5rem; }
+            .subtitle { font-size: 1.2rem; }
+            .section-title { font-size: 2rem; }
+            .movies-grid { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; align-items: center; }
+            .characters-carousel { justify-content: center; }
+        }
+        
+        /* Animación de entrada */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+        
+        .fade-in:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in:nth-child(3) { animation-delay: 0.3s; }
+        
+        /* Efecto de hologram */
+        .hologram {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hologram::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(0, 255, 255, 0.1) 50%,
+                transparent 100%
+            );
+            animation: hologramScan 3s linear infinite;
+        }
+        
+        @keyframes hologramScan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursor personalizado -->
+    <div class="lightsaber-cursor" id="lightsaber"></div>
+    
+    <!-- Fondo de estrellas -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- Líneas de velocidad warp -->
+    <div class="warp-lines" id="warpLines"></div>
+    
+    <!-- Efecto de onda sonora -->
+    <div class="sound-wave" id="soundWave"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo hologram">STAR WARS</h1>
+            <p class="subtitle">La Trilogía Original • 1977-1983</p>
+        </div>
+    </header>
+    
+    <!-- Contenido principal -->
+    <main class="container">
+        <!-- Sección de películas -->
+        <section class="movies-section">
+            <h2 class="section-title fade-in">La Saga Épica</h2>
+            <div class="movies-grid">
+                <div class="movie-card fade-in">
+                    <img src="images/2ptRS5gJdwBd.jpg" alt="Una Nueva Esperanza" class="movie-image">
+                    <h3 class="movie-title">Episodio IV: Una Nueva Esperanza</h3>
+                    <p class="movie-year">1977</p>
+                    <p class="movie-description">
+                        La Alianza Rebelde roba los planos de la Estrella de la Muerte, 
+                        una estación espacial del Imperio con poder suficiente para destruir planetas enteros.
+                    </p>
+                </div>
+                
+                <div class="movie-card fade-in">
+                    <img src="images/0Qz9shq0Pf6F.jpg" alt="El Imperio Contraataca" class="movie-image">
+                    <h3 class="movie-title">Episodio V: El Imperio Contraataca</h3>
+                    <p class="movie-year">1980</p>
+                    <p class="movie-description">
+                        Después de la destrucción de la Estrella de la Muerte, 
+                        las fuerzas imperiales persiguen a los rebeldes por toda la galaxia.
+                    </p>
+                </div>
+                
+                <div class="movie-card fade-in">
+                    <img src="images/yhoqRJipK2fi.jpg" alt="El Retorno del Jedi" class="movie-image">
+                    <h3 class="movie-title">Episodio VI: El Retorno del Jedi</h3>
+                    <p class="movie-year">1983</p>
+                    <p class="movie-description">
+                        Luke Skywalker lucha por llevar a su padre de vuelta del lado oscuro 
+                        mientras la Alianza Rebelde planea un ataque final contra el Imperio.
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Botones de acción -->
+        <section class="action-buttons">
+            <button class="btn" onclick="activateHyperspace()">Salto al Hiperespacio</button>
+            <button class="btn btn-secondary" onclick="playLightsaberSound()">Activar Sable de Luz</button>
+            <button class="btn btn-danger" onclick="playImperialMarch()">Marcha Imperial</button>
+        </section>
+        
+        <!-- Sección de personajes -->
+        <section class="characters-section">
+            <h2 class="section-title">Héroes y Villanos</h2>
+            <div class="characters-carousel">
+                <div class="character-card hologram">
+                    <h3 class="character-name">Luke Skywalker</h3>
+                    <p class="character-role">Jedi Knight</p>
+                </div>
+                <div class="character-card hologram">
+                    <h3 class="character-name">Princess Leia</h3>
+                    <p class="character-role">Rebel Leader</p>
+                </div>
+                <div class="character-card hologram">
+                    <h3 class="character-name">Han Solo</h3>
+                    <p class="character-role">Smuggler</p>
+                </div>
+                <div class="character-card hologram">
+                    <h3 class="character-name">Darth Vader</h3>
+                    <p class="character-role">Sith Lord</p>
+                </div>
+                <div class="character-card hologram">
+                    <h3 class="character-name">Obi-Wan Kenobi</h3>
+                    <p class="character-role">Jedi Master</p>
+                </div>
+                <div class="character-card hologram">
+                    <h3 class="character-name">Yoda</h3>
+                    <p class="character-role">Grand Master</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">
+                "Que la Fuerza te acompañe" - Portal dedicado a la trilogía original de Star Wars
+            </p>
+            <p class="footer-text">
+                © 1977-1983 Lucasfilm Ltd. • Creado con amor por un fan de la galaxia muy, muy lejana...
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        // Variables globales
+        let isHyperspaceActive = false;
+        let lightsaberActive = false;
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            createWarpLines();
+            initLightsaberCursor();
+            addScrollAnimations();
+            playAmbientSound();
+        });
+        
+        // Crear estrellas animadas
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numStars = 200;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 1) + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Crear líneas de velocidad warp
+        function createWarpLines() {
+            const warpContainer = document.getElementById('warpLines');
+            const numLines = 50;
+            
+            for (let i = 0; i < numLines; i++) {
+                const line = document.createElement('div');
+                line.className = 'warp-line';
+                line.style.left = Math.random() * 100 + '%';
+                line.style.animationDelay = Math.random() * 0.5 + 's';
+                warpContainer.appendChild(line);
+            }
+        }
+        
+        // Cursor de sable de luz
+        function initLightsaberCursor() {
+            const lightsaber = document.getElementById('lightsaber');
+            
+            document.addEventListener('mousemove', function(e) {
+                lightsaber.style.left = e.clientX + 'px';
+                lightsaber.style.top = e.clientY + 'px';
+                
+                // Cambiar color del sable aleatoriamente
+                if (Math.random() < 0.01) {
+                    const colors = ['#00ff00', '#ff0000', '#0000ff', '#ffff00', '#ff00ff'];
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    lightsaber.style.background = `linear-gradient(to bottom, ${color}, #ffffff)`;
+                    lightsaber.style.boxShadow = `0 0 20px ${color}, 0 0 40px ${color}`;
+                }
+            });
+            
+            // Efectos de click
+            document.addEventListener('click', function(e) {
+                createLightsaberEffect(e.clientX, e.clientY);
+                playLightsaberSound();
+            });
+        }
+        
+        // Efecto visual del sable de luz
+        function createLightsaberEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.style.position = 'fixed';
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            effect.style.width = '100px';
+            effect.style.height = '100px';
+            effect.style.background = 'radial-gradient(circle, rgba(0,255,0,0.8), transparent)';
+            effect.style.borderRadius = '50%';
+            effect.style.pointerEvents = 'none';
+            effect.style.zIndex = '9999';
+            effect.style.animation = 'lightsaberFlash 0.5s ease-out';
+            
+            document.body.appendChild(effect);
+            
+            setTimeout(() => {
+                document.body.removeChild(effect);
+            }, 500);
+        }
+        
+        // Activar hiperespacio
+        function activateHyperspace() {
+            if (isHyperspaceActive) return;
+            
+            isHyperspaceActive = true;
+            const warpLines = document.getElementById('warpLines');
+            warpLines.style.opacity = '1';
+            
+            // Efecto de sonido visual
+            showSoundWave();
+            
+            // Vibración de la pantalla
+            document.body.style.animation = 'shake 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                warpLines.style.opacity = '0';
+                document.body.style.animation = '';
+                isHyperspaceActive = false;
+            }, 2000);
+            
+            // Reproducir sonido del hiperespacio
+            playHyperspaceSound();
+        }
+        
+        // Sonido del sable de luz
+        function playLightsaberSound() {
+            lightsaberActive = !lightsaberActive;
+            const lightsaber = document.getElementById('lightsaber');
+            
+            if (lightsaberActive) {
+                lightsaber.style.height = '80px';
+                lightsaber.style.boxShadow = '0 0 30px #00ff00, 0 0 60px #00ff00';
+                showSoundWave();
+            } else {
+                lightsaber.style.height = '40px';
+                lightsaber.style.boxShadow = '0 0 20px #00ff00, 0 0 40px #00ff00';
+            }
+            
+            // Simular sonido con vibración visual
+            createSoundVisualization();
+        }
+        
+        // Marcha Imperial
+        function playImperialMarch() {
+            document.body.style.background = 'linear-gradient(45deg, #000, #330000, #000)';
+            document.body.style.animation = 'imperialPulse 2s ease-in-out';
+            
+            // Cambiar colores a rojo temporalmente
+            const cards = document.querySelectorAll('.movie-card');
+            cards.forEach(card => {
+                card.style.borderColor = '#ff0000';
+                card.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.5)';
+            });
+            
+            showSoundWave();
+            
+            setTimeout(() => {
+                document.body.style.background = '#000';
+                document.body.style.animation = '';
+                cards.forEach(card => {
+                    card.style.borderColor = '';
+                    card.style.boxShadow = '';
+                });
+            }, 3000);
+        }
+        
+        // Mostrar onda sonora
+        function showSoundWave() {
+            const soundWave = document.getElementById('soundWave');
+            soundWave.classList.add('active');
+            
+            setTimeout(() => {
+                soundWave.classList.remove('active');
+            }, 1000);
+        }
+        
+        // Visualización de sonido
+        function createSoundVisualization() {
+            const container = document.body;
+            const numBars = 20;
+            
+            for (let i = 0; i < numBars; i++) {
+                const bar = document.createElement('div');
+                bar.style.position = 'fixed';
+                bar.style.bottom = '0';
+                bar.style.left = (i * (100 / numBars)) + '%';
+                bar.style.width = '2%';
+                bar.style.background = '#00ff00';
+                bar.style.height = Math.random() * 100 + 'px';
+                bar.style.animation = 'soundBar 0.5s ease-in-out';
+                bar.style.zIndex = '1000';
+                
+                container.appendChild(bar);
+                
+                setTimeout(() => {
+                    container.removeChild(bar);
+                }, 500);
+            }
+        }
+        
+        // Sonidos simulados (efectos visuales)
+        function playHyperspaceSound() {
+            console.log('🚀 Sonido del hiperespacio activado');
+            // En una implementación real, aquí se reproduciría el audio
+        }
+        
+        function playAmbientSound() {
+            console.log('🎵 Música ambiente de Star Wars iniciada');
+            // En una implementación real, aquí se reproduciría música de fondo
+        }
+        
+        // Animaciones de scroll
+        function addScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+        
+        // Efectos de teclado
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    activateHyperspace();
+                    break;
+                case 'l':
+                case 'L':
+                    playLightsaberSound();
+                    break;
+                case 'i':
+                case 'I':
+                    playImperialMarch();
+                    break;
+            }
+        });
+        
+        // Efectos adicionales de CSS
+        const additionalStyles = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+            
+            @keyframes imperialPulse {
+                0%, 100% { filter: brightness(1); }
+                50% { filter: brightness(0.7) hue-rotate(180deg); }
+            }
+            
+            @keyframes lightsaberFlash {
+                0% { transform: scale(0) rotate(0deg); opacity: 1; }
+                100% { transform: scale(2) rotate(360deg); opacity: 0; }
+            }
+            
+            @keyframes soundBar {
+                0%, 100% { height: 0; }
+                50% { height: ${Math.random() * 200 + 50}px; }
+            }
+        `;
+        
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = additionalStyles;
+        document.head.appendChild(styleSheet);
+        
+        // Easter eggs
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+        
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.code);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            if (JSON.stringify(konamiCode) === JSON.stringify(konamiSequence)) {
+                activateSecretMode();
+            }
+        });
+        
+        function activateSecretMode() {
+            alert('¡Has desbloqueado el modo Jedi! 🌟');
+            document.body.style.filter = 'hue-rotate(180deg)';
+            
+            setTimeout(() => {
+                document.body.style.filter = '';
+            }, 5000);
+        }
+        
+        // Mensaje de bienvenida
+        setTimeout(() => {
+            console.log(`
+    ⭐ BIENVENIDO AL PORTAL DE STAR WARS ⭐
+    
+    Controles:
+    • Espacio: Salto al hiperespacio
+    • L: Activar sable de luz
+    • I: Marcha Imperial
+    • Código Konami: Modo secreto
+    
+    ¡Que la Fuerza te acompañe!
+            `);
+        }, 1000);
+    </script>
+</body>
+</html>
+

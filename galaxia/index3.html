@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Galáctico - Star Wars Trilogía Original</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        /* CSS INTEGRADO - EFECTOS GALÁCTICOS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        /* FONDO DE ESTRELLAS ANIMADO */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, #001122 0%, #000000 70%);
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        .star.big {
+            width: 3px;
+            height: 3px;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+
+        .star.shooting {
+            width: 4px;
+            height: 1px;
+            background: linear-gradient(90deg, #fff, transparent);
+            animation: shoot 4s infinite linear;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(-100px) translateY(0); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateX(100vw) translateY(-50px); opacity: 0; }
+        }
+
+        /* EFECTOS DE TEXTO GALÁCTICO */
+        .glow-text {
+            text-shadow: 
+                0 0 5px currentColor,
+                0 0 10px currentColor,
+                0 0 20px currentColor,
+                0 0 40px currentColor;
+        }
+
+        .lightsaber-text {
+            background: linear-gradient(45deg, #00ffff, #0080ff, #00ffff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px #00ffff);
+        }
+
+        /* HEADER ÉPICO */
+        header {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(0,50,100,0.3) 0%, rgba(0,0,0,0.8) 70%);
+        }
+
+        .hero-content {
+            z-index: 10;
+            animation: fadeInUp 2s ease-out;
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #00ffff;
+            font-weight: 300;
+        }
+
+        .death-star {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 200px;
+            height: 200px;
+            background: url('https://upload.wikimedia.org/wikipedia/en/f/f9/Death_star1.png') no-repeat center;
+            background-size: contain;
+            animation: float 6s ease-in-out infinite, rotate 20s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* BOTONES HOLOGRÁFICOS */
+        .holo-button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border: 2px solid #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holo-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 
+                0 0 20px #00ffff,
+                inset 0 0 20px rgba(0, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .holo-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .holo-button:hover::before {
+            left: 100%;
+        }
+
+        /* SECCIONES PRINCIPALES */
+        .section {
+            padding: 100px 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            color: #ffd700;
+            text-shadow: 0 0 20px #ffd700;
+        }
+
+        .section p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            color: #ccc;
+        }
+
+        /* GRID DE PELÍCULAS */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin: 50px 0;
+        }
+
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 30px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+        }
+
+        .movie-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .movie-year {
+            color: #00ffff;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* EFECTOS DE PARTÍCULAS */
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            pointer-events: none;
+        }
+
+        /* ANIMACIONES ADICIONALES */
+        .force-pulse {
+            animation: forcePulse 3s infinite ease-in-out;
+        }
+
+        @keyframes forcePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* BARRA DE NAVEGACIÓN FLOTANTE */
+        .nav-bar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 50px;
+            padding: 10px 20px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-bar a {
+            color: #00ffff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-bar a:hover {
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+
+        /* EFECTOS RESPONSIVE */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 50px 20px;
+            }
+            
+            .death-star {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .movies-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* EFECTOS DE SCROLL */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* FOOTER GALÁCTICO */
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            margin: 20px 0;
+        }
+
+        .social-links a {
+            color: #00ffff;
+            font-size: 2rem;
+            margin: 0 15px;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ffd700;
+            transform: scale(1.2);
+            text-shadow: 0 0 15px currentColor;
+        }
+
+        /* EFECTOS ESPECIALES DE LIGHTSABER */
+        .lightsaber-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            margin: 20px auto;
+            width: 200px;
+            animation: lightsaberGlow 2s infinite ease-in-out;
+        }
+
+        @keyframes lightsaberGlow {
+            0%, 100% { 
+                box-shadow: 0 0 5px #00ffff;
+                width: 200px;
+            }
+            50% { 
+                box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+                width: 300px;
+            }
+        }
+
+        /* PANEL HOLOGRÁFICO */
+        .holo-panel {
+            background: rgba(0, 255, 255, 0.05);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holo-panel::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ffff, transparent, #00ffff);
+            z-index: -1;
+            border-radius: 15px;
+            animation: borderGlow 3s infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- CAMPO DE ESTRELLAS -->
+    <div class="starfield" id="starfield"></div>
+
+    <!-- NAVEGACIÓN FLOTANTE -->
+    <nav class="nav-bar">
+        <a href="#inicio">Inicio</a>
+        <a href="#saga">Saga</a>
+        <a href="#peliculas">Películas</a>
+        <a href="#galaxia">Galaxia</a>
+        <a href="#contacto">Contacto</a>
+    </nav>
+
+    <!-- HEADER ÉPICO -->
+    <header id="inicio">
+        <div class="death-star"></div>
+        <div class="hero-content">
+            <h1 class="main-title glow-text force-pulse">STAR WARS</h1>
+            <p class="subtitle lightsaber-text">Trilogía Original • 1977-1983</p>
+            <div class="lightsaber-line"></div>
+            <p style="font-size: 1.2rem; margin: 2rem 0; max-width: 600px;">
+                Hace mucho tiempo, en una galaxia muy, muy lejana...
+            </p>
+            <a href="#peliculas" class="holo-button">
+                <i class="fas fa-rocket"></i> Explorar la Galaxia
+            </a>
+            <a href="#saga" class="holo-button">
+                <i class="fas fa-jedi"></i> La Saga Épica
+            </a>
+        </div>
+    </header>
+
+    <!-- SECCIÓN SAGA -->
+    <section class="section fade-in" id="saga">
+        <h2>LA SAGA LEGENDARIA</h2>
+        <div class="holo-panel">
+            <p>
+                La trilogía original de Star Wars revolucionó el cine para siempre. 
+                Entre 1977 y 1983, George Lucas nos transportó a una galaxia llena de 
+                aventuras épicas, héroes legendarios y la eterna lucha entre el bien y el mal.
+            </p>
+            <div class="lightsaber-line"></div>
+            <p>
+                Desde los desiertos de Tatooine hasta la segunda Estrella de la Muerte, 
+                siguimos el viaje de Luke Skywalker desde un joven granjero hasta 
+                convertirse en un Caballero Jedi y enfrentar a su destino.
+            </p>
+        </div>
+    </section>
+
+    <!-- SECCIÓN PELÍCULAS -->
+    <section class="section fade-in" id="peliculas">
+        <h2>LA TRILOGÍA ORIGINAL</h2>
+        <div class="movies-grid">
+            <div class="movie-card">
+                <h3>UNA NUEVA ESPERANZA</h3>
+                <p class="movie-year">EPISODIO IV • 1977</p>
+                <div class="lightsaber-line"></div>
+                <p>
+                    La Rebelión roba los planos de la Estrella de la Muerte. 
+                    Luke Skywalker conoce a Obi-Wan Kenobi y descubre su destino 
+                    como Jedi. La épica batalla para destruir la estación espacial imperial.
+                </p>
+                <div style="margin-top: 20px;">
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                </div>
+            </div>
+
+            <div class="movie-card">
+                <h3>EL IMPERIO CONTRAATACA</h3>
+                <p class="movie-year">EPISODIO V • 1980</p>
+                <div class="lightsaber-line"></div>
+                <p>
+                    La Rebelión huye del Imperio. Luke entrena con Yoda en Dagobah. 
+                    El épico duelo entre Luke y Darth Vader, y la revelación más 
+                    impactante de la saga: "Yo soy tu padre".
+                </p>
+                <div style="margin-top: 20px;">
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                </div>
+            </div>
+
+            <div class="movie-card">
+                <h3>EL RETORNO DEL JEDI</h3>
+                <p class="movie-year">EPISODIO VI • 1983</p>
+                <div class="lightsaber-line"></div>
+                <p>
+                    Luke rescata a Han Solo. La batalla final en Endor con los Ewoks. 
+                    El enfrentamiento definitivo entre Luke, Vader y el Emperador. 
+                    La redención de Anakin Skywalker y la victoria de la Rebelión.
+                </p>
+                <div style="margin-top: 20px;">
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                    <i class="fas fa-star" style="color: #ffd700; margin: 0 5px;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN GALAXIA -->
+    <section class="section fade-in" id="galaxia">
+        <h2>EXPLORA LA GALAXIA</h2>
+        <div class="holo-panel">
+            <h3 class="lightsaber-text" style="margin-bottom: 20px;">PERSONAJES LEGENDARIOS</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin: 40px 0;">
+                <div>
+                    <i class="fas fa-user-ninja" style="font-size: 3rem; color: #00ffff; margin-bottom: 15px;"></i>
+                    <h4 style="color: #ffd700;">Luke Skywalker</h4>
+                    <p>El joven que se convirtió en Jedi</p>
+                </div>
+                <div>
+                    <i class="fas fa-mask" style="font-size: 3rem; color: #ff0000; margin-bottom: 15px;"></i>
+                    <h4 style="color: #ffd700;">Darth Vader</h4>
+                    <p>El Señor Oscuro de los Sith</p>
+                </div>
+                <div>
+                    <i class="fas fa-crown" style="font-size: 3rem; color: #ffd700; margin-bottom: 15px;"></i>
+                    <h4 style="color: #ffd700;">Princesa Leia</h4>
+                    <p>Líder de la Rebelión</p>
+                </div>
+                <div>
+                    <i class="fas fa-rocket" style="font-size: 3rem; color: #00ffff; margin-bottom: 15px;"></i>
+                    <h4 style="color: #ffd700;">Han Solo</h4>
+                    <p>El contrabandista con corazón</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="holo-panel">
+            <h3 class="lightsaber-text" style="margin-bottom: 20px;">TECNOLOGÍA GALÁCTICA</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                <div>
+                    <i class="fas fa-satellite" style="font-size: 3rem; color: #ff6600; margin-bottom: 15px;"></i>
+                    <h4 style="color: #ffd700;">Estrella de la Muerte</h4>
+                    <p>La superarma definitiva del Imperio</p>
+                </div>
+                <div>
+                    <i class="fas fa-space-shuttle" style="font-size: 3rem; color: #00ffff; margin-bottom: 15px;"></i>
+                    <h4 style="color: #ffd700;">Halcón Milenario</h4>
+                    <p>La nave más rápida de la galaxia</p>
+                </div>
+                <div>
+                    <i class="fas fa-sword" style="font-size: 3rem; color: #00ffff; margin-bottom: 15px;"></i>
+                    <h4 style="color: #ffd700;">Sables de Luz</h4>
+                    <p>El arma elegante de los Jedi</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contacto">
+        <div class="footer-content">
+            <h3 class="glow-text" style="color: #ffd700; margin-bottom: 20px;">
+                QUE LA FUERZA TE ACOMPAÑE
+            </h3>
+            <div class="lightsaber-line"></div>
+            <p style="margin: 20px 0; color: #ccc;">
+                Portal dedicado a la trilogía original de Star Wars (1977-1983)
+            </p>
+            <div class="social-links">
+                <a href="#" class="glow-text"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="glow-text"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="glow-text"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="glow-text"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p style="margin-top: 30px; color: #666; font-size: 0.9rem;">
+                © 2024 Portal Galáctico • Inspirado en Star Wars Original Trilogy<br>
+                "Hace mucho tiempo, en una galaxia muy, muy lejana..."
+            </p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT INTEGRADO -->
+    <script>
+        // GENERADOR DE ESTRELLAS DINÁMICO
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const numberOfStars = 200;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Algunos tipos especiales de estrellas
+                if (Math.random() < 0.1) {
+                    star.classList.add('big');
+                } else if (Math.random() < 0.05) {
+                    star.classList.add('shooting');
+                }
+                
+                // Posición aleatoria
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                
+                // Delay de animación aleatorio
+                star.style.animationDelay = Math.random() * 3 + 's';
+                
+                starfield.appendChild(star);
+            }
+        }
+
+        // EFECTOS DE PARTÍCULAS AL HACER CLIC
+        function createParticleEffect(x, y) {
+            const colors = ['#00ffff', '#ffd700', '#ff0066', '#00ff88'];
+            
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                document.body.appendChild(particle);
+                
+                // Animación de la partícula
+                const angle = (Math.PI * 2 * i) / 12;
+                const velocity = 100 + Math.random() * 100;
+                
+                particle.animate([
+                    { 
+                        transform: 'translate(0, 0) scale(1)', 
+                        opacity: 1 
+                    },
+                    { 
+                        transform: `translate(${Math.cos(angle) * velocity}px, ${Math.sin(angle) * velocity}px) scale(0)`, 
+                        opacity: 0 
+                    }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        // EFECTOS DE SCROLL SUAVE Y APARICIÓN
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('.fade-in');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // NAVEGACIÓN SUAVE
+        function setupSmoothScrolling() {
+            const navLinks = document.querySelectorAll('.nav-bar a, .holo-button');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+        // EFECTOS DE SONIDO SIMULADOS (Visual)
+        function playForceSound(element) {
+            element.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // EFECTOS HOLOGRÁFICOS ALEATORIOS
+        function createHolographicEffects() {
+            const panels = document.querySelectorAll('.holo-panel');
+            
+            setInterval(() => {
+                panels.forEach(panel => {
+                    if (Math.random() < 0.1) {
+                        panel.style.animation = 'none';
+                        panel.offsetHeight; // Trigger reflow
+                        panel.style.animation = 'hologramFlicker 0.5s ease-in-out';
+                    }
+                });
+            }, 3000);
+        }
+
+        // ANIMACIÓN DE LIGHTSABER INTERACTIVA
+        function setupLightsaberEffects() {
+            const lightsaberElements = document.querySelectorAll('.lightsaber-text, .lightsaber-line');
+            
+            lightsaberElements.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    this.style.textShadow = '0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor';
+                    this.style.filter = 'brightness(1.5)';
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    this.style.textShadow = '';
+                    this.style.filter = '';
+                });
+            });
+        }
+
+        // CURSOR PERSONALIZADO CON EFECTOS
+        function setupCustomCursor() {
+            let mouseX = 0, mouseY = 0;
+            
+            document.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                
+                // Efecto de rastro ocasional
+                if (Math.random() < 0.1) {
+                    createTrailEffect(mouseX, mouseY);
+                }
+            });
+            
+            function createTrailEffect(x, y) {
+                const trail = document.createElement('div');
+                trail.style.position = 'fixed';
+                trail.style.left = x + 'px';
+                trail.style.top = y + 'px';
+                trail.style.width = '4px';
+                trail.style.height = '4px';
+                trail.style.background = '#00ffff';
+                trail.style.borderRadius = '50%';
+                trail.style.pointerEvents = 'none';
+                trail.style.zIndex = '9999';
+                
+                document.body.appendChild(trail);
+                
+                trail.animate([
+                    { opacity: 0.8, transform: 'scale(1)' },
+                    { opacity: 0, transform: 'scale(0)' }
+                ], {
+                    duration: 800,
+                    easing: 'ease-out'
+                }).onfinish = () => trail.remove();
+            }
+        }
+
+        // EFECTOS DE TYPING PARA TEXTOS
+        function setupTypingEffect() {
+            const subtitle = document.querySelector('.subtitle');
+            const text = subtitle.textContent;
+            subtitle.textContent = '';
+            
+            let i = 0;
+            const typeTimer = setInterval(() => {
+                if (i < text.length) {
+                    subtitle.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typeTimer);
+                }
+            }, 100);
+        }
+
+        // INICIALIZACIÓN CUANDO LA PÁGINA CARGA
+        document.addEventListener('DOMContentLoaded', function() {
+            // Crear campo de estrellas
+            createStarfield();
+            
+            // Configurar navegación suave
+            setupSmoothScrolling();
+            
+            // Configurar animaciones de scroll
+            handleScrollAnimations();
+            window.addEventListener('scroll', handleScrollAnimations);
+            
+            // Efectos de lightsaber
+            setupLightsaberEffects();
+            
+            // Cursor personalizado
+            setupCustomCursor();
+            
+            // Efectos holográficos
+            createHolographicEffects();
+            
+            // Efecto typing para el subtítulo
+            setTimeout(setupTypingEffect, 1000);
+            
+            // Efectos de clic
+            document.addEventListener('click', function(e) {
+                createParticleEffect(e.clientX, e.clientY);
+                
+                // Efecto de fuerza en elementos especiales
+                if (e.target.classList.contains('force-pulse') || 
+                    e.target.classList.contains('glow-text')) {
+                    playForceSound(e.target);
+                }
+            });
+            
+            // Efectos adicionales para botones
+            const holoButtons = document.querySelectorAll('.holo-button');
+            holoButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Efecto visual especial
+                    this.style.transform = 'scale(0.95)';
+                    this.style.boxShadow = '0 0 40px #00ffff, inset 0 0 40px rgba(0,255,255,0.3)';
+                    
+                    setTimeout(() => {
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                        
+                        // Navegar después del efecto
+                        const href = this.getAttribute('href');
+                        if (href && href.startsWith('#')) {
+                            const target = document.querySelector(href);
+                            if (target) {
+                                target.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        }
+                    }, 200);
+                });
+            });
+        });
+
+        // CSS ADICIONAL PARA EFECTOS DINÁMICOS
+        const additionalCSS = `
+            @keyframes hologramFlicker {
+                0%, 100% { opacity: 1; }
+                20% { opacity: 0.8; }
+                40% { opacity: 0.6; }
+                60% { opacity: 0.9; }
+                80% { opacity: 0.7; }
+            }
+            
+            .movie-card:hover::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(45deg, transparent, rgba(0,255,255,0.1), transparent);
+                animation: scanLine 2s infinite;
+            }
+            
+            @keyframes scanLine {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+            }
+        `;
+        
+        // Inyectar CSS adicional
+        const style = document.createElement('style');
+        style.textContent = additionalCSS;
+        document.head.appendChild(style);
+
+        // MENSAJE DE BIENVENIDA CON EFECTOS
+        setTimeout(() => {
+            console.log(`
+            🌟 ¡BIENVENIDO AL PORTAL GALÁCTICO! 🌟
+            
+            ═══════════════════════════════════════
+            ⚔️  QUE LA FUERZA TE ACOMPAÑE  ⚔️
+            ═══════════════════════════════════════
+            
+            🚀 Explora la trilogía original de Star Wars
+            ⭐ Efectos especiales activados
+            🎭 Portal desarrollado con tecnología galáctica
+            
+            Hace mucho tiempo, en una galaxia muy, muy lejana...
+            `);
+        }, 2000);
+    </script>
+</body>
+</html>
