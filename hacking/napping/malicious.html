@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog Promocional - Contenido Interesante</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      line-height: 1.6;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #2c3e50;
+      border-bottom: 3px solid #3498db;
+      padding-bottom: 10px;
+    }
+    .content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    p { color: #34495e; margin: 15px 0; }
+    .countdown { margin-top: 12px; font-style: italic; }
+  </style>
+
+  <!-- Fallback: si JS está deshabilitado, vuelve en 10s -->
+  <meta http-equiv="refresh" content="10; url=http://TU_IP/index.html">
+</head>
+<body>
+  <div class="content">
+    <h1>🎉 Las 10 Mejores Estrategias de Marketing Digital para 2025</h1>
+    <p>¡Gracias por hacer clic en nuestro enlace! Aquí encontrarás contenido exclusivo sobre las últimas tendencias en marketing digital...</p>
+    <p>Mientras exploras este artículo, asegúrate de implementar estas estrategias en tu negocio para maximizar tu alcance en redes sociales.</p>
+    <p><strong>Tip #1:</strong> El contenido visual genera 94% más de vistas que el contenido solo de texto.</p>
+    <p><strong>Tip #2:</strong> Los videos cortos están dominando las plataformas sociales en 2025.</p>
+    <p class="countdown">Esta página volverá a <code>index.html</code> automáticamente en <span id="sec">10</span> s…</p>
+  </div>
+
+  <script>
+    (function () {
+      // Cambia por tu dominio/IP o deja relativo si sirves desde el mismo directorio:
+      // Ejemplo relativo: const URL_INDEX = "index.html";
+      // Ejemplo absoluto: const URL_INDEX = "http://TU_IP/index.html";
+      const URL_INDEX = "http://TU_IP/index.html";
+      const DELAY_MS = 10000;
+
+      // Pequeño contador visual (opcional)
+      const secEl = document.getElementById("sec");
+      let remaining = DELAY_MS / 1000;
+      const t = setInterval(() => {
+        remaining -= 1;
+        if (secEl) secEl.textContent = String(remaining);
+        if (remaining <= 0) clearInterval(t);
+      }, 1000);
+
+      // A los 10s: vuelve esta pestaña a index.html
+      setTimeout(() => {
+        try {
+          // Si esta página se abrió desde otra (escenario tabnapping), restaura también la original.
+          if (window.opener && !window.opener.closed) {
+            window.opener.location.replace(URL_INDEX);
+          }
+        } catch (_) { /* ignorar restricciones de mismo-origen */ }
+
+        // Restaura esta pestaña
+        window.location.replace(URL_INDEX);
+      }, DELAY_MS);
+    })();
+  </script>
+</body>
+</html>
